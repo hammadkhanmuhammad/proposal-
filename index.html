@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>💖 Hammad → Ayesha Proposal</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu&display=swap');
+    body{margin:0;padding:0;font-family:'Noto Nastaliq Urdu',serif;background:linear-gradient(135deg,#ffdee9,#b5fffc);overflow:hidden;direction:rtl;text-align:center}
+    canvas#hearts{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0}
+    .card{position:relative;z-index:1;top:15vh;margin:auto;padding:2rem;width:80%;max-width:480px;background:#fff8;border-radius:20px;box-shadow:0 8px 20px #0002}
+    h1{color:#d6336c;font-size:2rem;margin-bottom:.5rem}
+    .subtitle{font-size:1.2rem;margin-bottom:1.2rem;color:#333}
+    .teddy{font-size:5rem;margin:1rem 0;animation:bounce 1.6s infinite}
+    @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
+    .buttons{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+    button{font-size:1.1rem;padding:.7rem 1.4rem;border:none;border-radius:50px;cursor:pointer;transition:.3s;box-shadow:0 4px 10px #0002}
+    #yes{background:#ff4d6d;color:#fff}
+    #yes:hover{transform:scale(1.1)}
+    #later{background:#ddd;color:#333;position:relative}
+    .sparkle{position:absolute;width:6px;height:6px;background:#ff0;border-radius:50%;animation:blink linear infinite}
+    @keyframes blink{0%,100%{opacity:0}50%{opacity:1}}
+  </style>
+</head>
+<body>
+  <canvas id="hearts"></canvas>
+  <div class="card">
+    <h1>💘 ہمّاد کی جانب سے عائشہ کو</h1>
+    <div id="type" class="subtitle"></div>
+    <div class="teddy">🧸</div>
+    <div class="buttons">
+      <button id="yes">ہاں 💖</button>
+      <button id="later">اُممم… سوچوں گی 🤭</button>
+    </div>
+  </div>
+  <script>
+    // ---------- Typewriter (Urdu) ----------
+    const line = "میں تم سے سچّی محبت کرتا ہوں — کیا تم میری ہاں کہو گی؟";
+    const typeEl = document.getElementById('type');
+    let i = 0;
+    function type(){
+      if(i<=line.length){
+        typeEl.textContent = line.slice(0,i++);
+        setTimeout(type, 55);
+      }
+    }
+    if(document.readyState === 'loading'){
+      document.addEventListener('DOMContentLoaded', type);
+    }else{ type(); }
+
+    // ---------- Floating Hearts Background ----------
+    const c = document.getElementById('hearts');
+    const ctx = c.getContext('2d');
+    let w, h, hearts=[];
+    function resize(){ w = c.width = innerWidth; h = c.height = innerHeight; }
+    resize();
+    addEventListener('resize', resize);
+    function spawn(){
+      const count = 10 + Math.random()*8;
+      for(let k=0;k<count;k++){
+        hearts.push({
+          x: Math.random()*w,
+          y: h+20,
+          s: 16+Math.random()*22,
+          v: 1+Math.random()*1.5,
+          a: Math.random()*Math.PI,
+          rot:(Math.random()*2-1)*0.02,
+          hue: 320+Math.random()*40
+        });
+      }
+    }
+    function drawHeart(x,y,s){
+      ctx.beginPath();
+      const top = y - s*0.3;
+      ctx.moveTo(x, top);
+      ctx.bezierCurveTo(x-s, top-s*0.8, x-s*1.3, y, x, y+s);
+      ctx.bezierCurveTo(x+s*1.3, y, x+s, top-s*0.8, x, top);
+      ctx.closePath();
+    }
+    function tick(){
+      ctx.clearRect(0,0,w,h);
+      hearts.forEach((p)=>{
+        p.y -= p.v;
+        p.x += Math.sin(p.a+=0.02)*0.6;
+        p.rot += 0.01;
+        ctx.save();
+        ctx.translate(p.x,p.y);
+        ctx.rotate(p.rot);
+        ctx.fillStyle = `hsla(${p.hue},95%,70%,.9)`;
+        drawHeart(0,0,p.s);
+        ctx.fill();
+        ctx.restore();
+      });
+      hearts = hearts.filter(p=>p.y>-40);
+      requestAnimationFrame(tick);
+    }
+    setInterval(spawn, 900);
+    tick();
+
+    // ---------- Buttons ----------
+    const yes = document.getElementById('yes');
+    const later = document.getElementById('later');
+
+    // Later runs away
+    let dodge = 0;
+    later.addEventListener('pointerenter', ()=>{
+      dodge += 40;
+      const dx = (Math.random() * 160 - 80) + dodge;
+      const dy = (Math.random() * 120 - 60);
+      later.style.transform = `translate(${dx}px, ${dy}px) rotate(${(Math.random()*10-5)}deg)`;
+    });
+
+    // Confetti burst on YES
+    function confettiBurst(x,y){
+      const n = 140; const parts=[]; const cvs = document.createElement('canvas');
+      cvs.width = innerWidth; cvs.height = innerHeight; cvs.style.cssText='position:fixed;inset:0;pointer-events:none;z-index:3';
+      document.body.appendChild(cvs); const cx = cvs.getContext('2d');
+      for(let i=0;i<n;i++){
+        parts.push({x,y, vx: (Math.random()*6-3), vy: (Math.random()*-4-3), g: .12+Math.random()*.08, r: 2+Math.random()*4, a: 1, hue: Math.random()*360});
+      }
+      (function anim(){
+        cx.clearRect(0,0,cvs.width,cvs.height);
+        parts.forEach(p=>{
+          p.vx *= 0.99; p.vy += p.g; p.x += p.vx; p.y += p.vy; p.a -= 0.012;
+          cx.globalAlpha = Math.max(p.a,0);
+          cx.fillStyle = `hsl(${p.hue}, 90%, 60%)`;
+          cx.fillRect(p.x, p.y, p.r, p.r*2);
+        });
+        if(parts.some(p=>p.a>0 && p.y<innerHeight+30)) requestAnimationFrame(anim); else cvs.remove();
+      })();
+    }
+
+    yes.addEventListener('click', (e)=>{
+      const b = e.currentTarget.getBoundingClientRect();
+      confettiBurst(b.left+b.width/2, b.top+b.height/2);
+      document.querySelector('.subtitle').textContent = 'تم نے ہاں کہہ دی! آج سے میرا دل صرف تمہارا ہے — آئی لو یو، عائشہ!';
+      yes.textContent = 'شکریہ جانِ من 💘';
+      later.remove();
+    });
+
+    // Random sparkles
+    const card = document.querySelector('.card');
+    function addSparkle(){
+      const s = document.createElement('span'); s.className='sparkle';
+      s.style.left = Math.random()*100 + '%'; s.style.top = (Math.random()*100) + '%';
+      s.style.opacity = 0.5 + Math.random()*0.5; s.style.animationDuration = (1.5+Math.random()*1.5)+'s';
+      card.appendChild(s); setTimeout(()=>s.remove(), 2200);
+    }
+    setInterval(addSparkle, 300);
+  </script>
+</body>
+</html>
